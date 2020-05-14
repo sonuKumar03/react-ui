@@ -1,0 +1,2 @@
+const mapToken = "pk.eyJ1IjoidGVjaDE4IiwiYSI6ImNrNjNuNHFnbjA3ZWczcG1wbjhtNjRib3cifQ.rotLOBIUUeo5wcjFokXU5w";
+export default mapToken;
