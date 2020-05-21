@@ -1,20 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Link as RouterLink, withRouter } from 'react-router-dom';
+import {useSelector} from 'react-redux'
 import PropTypes from 'prop-types';
 import validate from 'validate.js';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/core';
+import firebase from '../../config'
+import 'firebase/auth'
 import {
   Grid,
   Button,
   IconButton,
   TextField,
   Link,
-  Typography
+  Typography,Backdrop,
+  CircularProgress
 } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-
 import { Facebook as FacebookIcon, Google as GoogleIcon } from 'icons';
-
+import { useDispatch } from 'react-redux';
+import { loginUser } from 'async/user/user';
+import { selectLoading } from 'app/Garage/ui/uiSlice';
+import { login } from 'app/Garage/user/userSlice';
 const schema = {
   email: {
     presence: { allowEmpty: false, message: 'is required' },
@@ -32,6 +38,10 @@ const schema = {
 };
 
 const useStyles = makeStyles(theme => ({
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
   root: {
     backgroundColor: theme.palette.background.default,
     height: '100%'
@@ -127,24 +137,31 @@ const useStyles = makeStyles(theme => ({
 
 const SignIn = props => {
   const { history } = props;
-
   const classes = useStyles();
-
   const [formState, setFormState] = useState({
     isValid: false,
     values: {},
     touched: {},
     errors: {}
   });
+  const dispatch = useDispatch();
+  const loading = useSelector(selectLoading);
 
   useEffect(() => {
+
     const errors = validate(formState.values, schema);
     setFormState(formState => ({
       ...formState,
       isValid: errors ? false : true,
       errors: errors || {}
     }));
-  }, [formState.values]);
+  }, [formState.values,loading]);
+
+  // backdrop
+  const [open, setOpen] = React.useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const handleBack = () => {
     history.goBack();
@@ -152,7 +169,6 @@ const SignIn = props => {
 
   const handleChange = event => {
     event.persist();
-
     setFormState(formState => ({
       ...formState,
       values: {
@@ -168,15 +184,26 @@ const SignIn = props => {
       }
     }));
   };
-
   const handleSignIn = event => {
     event.preventDefault();
-    history.push('/');
+    console.log(formState.values);
+    setOpen(!open);
+    const {email ,password} = formState.values;
+    firebase.auth().signInWithEmailAndPassword(email,password).then((doc)=>{
+      if(!doc.user.uid){
+        alert("user doesn't exit")
+        setOpen(!open);
+        return 
+      }
+      dispatch(login(doc.user.uid));
+      history.push('/');
+    }).catch(err=>{
+      console.log(err);
+    })    
   };
 
   const hasError = field =>
     formState.touched[field] && formState.errors[field] ? true : false;
-
   return (
     <div className={classes.root}>
       <Grid
@@ -185,37 +212,6 @@ const SignIn = props => {
         justify="center"
         alignItems="center"
       >
-        {/* <Grid
-          className={classes.quoteContainer}
-          item
-          lg={5}
-        >
-          <div className={classes.quote}>
-            <div className={classes.quoteInner}>
-              <Typography
-                className={classes.quoteText}
-                variant="h1"
-              >
-                Hella narwhal Cosby sweater McSweeney's, salvia kitsch before
-                they sold out High Life.
-              </Typography>
-              <div className={classes.person}>
-                <Typography
-                  className={classes.name}
-                  variant="body1"
-                >
-                  Takamaru Ayako
-                </Typography>
-                <Typography
-                  className={classes.bio}
-                  variant="body2"
-                >
-                  Manager at inVision
-                </Typography>
-              </div>
-            </div>
-          </div>
-        </Grid> */}
         <Grid
           className={classes.content}
           item
@@ -253,7 +249,6 @@ const SignIn = props => {
                   <Grid item>
                     <Button
                       color="primary"
-                      onClick={handleSignIn}
                       size="large"
                       variant="contained"
                     >
@@ -263,7 +258,6 @@ const SignIn = props => {
                   </Grid>
                   <Grid item>
                     <Button
-                      onClick={handleSignIn}
                       size="large"
                       variant="contained"
                     >
@@ -316,9 +310,13 @@ const SignIn = props => {
                   size="large"
                   type="submit"
                   variant="contained"
+                  onClick={handleSignIn}
                 >
                   Sign in now
                 </Button>
+                <Backdrop className={classes.backdrop} open={open} onClick={handleClose}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
                 <Typography
                   color="textSecondary"
                   variant="body1"

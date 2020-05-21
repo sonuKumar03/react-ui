@@ -1,23 +1,27 @@
-import React from 'react';
+import React ,{useEffect,useState}from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import { makeStyles } from '@material-ui/styles';
-import Shedule from '../../AddStore/components/Shedule'
+import { makeStyles } from '@material-ui/core';
+import Shedule from './Shedules'
 import {
   Card,
   CardContent,
   Typography,
   Divider,
-  Chip
+  Chip,Button
 } from '@material-ui/core';
-import { useSelector } from 'react-redux';
-import { selectStore } from 'app/Garage/store/storeSlice';
+import { useSelector ,useDispatch} from 'react-redux';
+import { selectStore, setStore} from 'app/Garage/store/storeSlice';
 import Motor from '@material-ui/icons/Motorcycle'
 import FourWheeler from  '@material-ui/icons/AirportShuttle'
 import LocalCarWashIcon from '@material-ui/icons/LocalCarWash';
 import ColorLensIcon from '@material-ui/icons/ColorLens';
 import AutorenewIcon from '@material-ui/icons/Autorenew';
-
+import { toggleStore } from 'async/store/store';
+import { selectUid } from 'app/Garage/user/userSlice';
+import 'config'
+import firebase from 'firebase/app'
+const db = firebase.firestore();
 const useStyles = makeStyles(theme => ({
   root: {margin:16},
   details: {
@@ -37,7 +41,6 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(2)
   }
 }));
-
 const camelCase = str => {
     if(!str){
         return
@@ -48,6 +51,7 @@ const camelCase = str => {
 };
 
 const getIcons = (name)=>{
+  name=name.toLowerCase();
     if(name.localeCompare('two wheeler')===0){
         return <Motor/>
     }
@@ -63,25 +67,45 @@ const getIcons = (name)=>{
     if(name.localeCompare('color')||name.localeCompare('coloring')===0){
         return <ColorLensIcon />
     }
-    if(name.localeCompare('wash')===0){
-        return <LocalCarWashIcon/>
-    }
 }
 
 const StoreDetails = props => {
   const { className} = props;
   const classes = useStyles();
-  const { basicInfo, characteristic } = useSelector(
+  const dispatch = useDispatch();
+  const [loading,setLoading] = useState(true);
+  const storeId = useSelector(selectUid);
+  useEffect( ()=>{
+    setLoading(true);
+    let callback=f=>f;
+    try{
+        callback = db.doc(`stores/${storeId}/data/info`).onSnapshot((docs)=>{
+          const store = docs.data();
+            dispatch(setStore(store));
+            setLoading(false);
+        },(err)=>{ console.log(err);
+         })
+    }catch(err){
+      console.log(err);
+    }
+    return callback;
+  },[])
+
+  const { basicInfo, characteristic,open } = useSelector(
     selectStore
   );
+  const _toggleStore = (event)=>{
+    dispatch(toggleStore({open,storeId}))
+  }
   return (
+    (!loading)?
     <div>
     <Card className={clsx(classes.root, className)}>
       <CardContent>
         <div className={classes.details}>
           <div>
             <Typography gutterBottom variant="h3">
-              {camelCase(basicInfo.name)}
+              {camelCase(basicInfo.name)} <STATUS open={open}/>
             </Typography>
             <Typography  color="textSecondary" variant="h4">
               {basicInfo.owner}
@@ -104,23 +128,31 @@ const StoreDetails = props => {
       </CardContent>
       <Divider />
       <div style={{ marginTop:8,marginLeft:8 }}>
-        {characteristic.types.map((type,i) => (
-          <Chip key={i} size="small" icon={getIcons(type)} label={type} style={{ marginRight: 8,marginBottom:8 }} />
-        ))}
+        {(characteristic.types)?characteristic.types.map(({name,checked},i) => (
+          <Chip key={i} size="small" icon={getIcons(name)} label={name} style={{ marginRight: 8,marginBottom:8 }} />
+        )):null}
       </div>
       <div style={{ marginTop:8,marginLeft:8 }}>
-        {characteristic.services.map((service,i) => (
-          <Chip key={i}  icon={getIcons(service)} size="small" label={service} style={{ marginRight: 8 ,marginBottom:8}} />
-        ))}
+        {(characteristic.features)?characteristic.features.map(({name},i)=>(
+          <Chip key={i}  icon={getIcons(name)} size="small" label={name} style={{ marginRight: 8 ,marginBottom:8}} />
+        )):null}
+      </div>
+      <div style={{display:"flex" ,justifyContent:"flex-end",marginBottom:8,marginRight:8}}>
+        <Button color="primary" variant="contained" onClick={_toggleStore}>{(open)?"CLOSE STORE":"OPEN STORE"}</Button>
       </div>
     </Card>
     <Card style={{margin:8}}>
       <Shedule/>
     </Card>
-    </div>
-
-  );
+    </div>:null
+  )
 };
+const STATUS = (props)=>{
+  const {open} = props;
+  return (
+    (open)?<Chip  size="small" label="OPEN" color="primary"/>:<Chip size="small" label="CLOSED"/>
+  )
+}
 
 StoreDetails.propTypes = {
   className: PropTypes.string

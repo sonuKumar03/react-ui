@@ -1,21 +1,20 @@
 import React from 'react';
-import { Switch, Redirect } from 'react-router-dom';
+import { Switch, Redirect,Route } from 'react-router-dom';
 
 import { RouteWithLayout } from './components';
 import { Main as MainLayout, Minimal as MinimalLayout } from './layouts';
 
 import {
   Dashboard as DashboardView,
-  UserList as UserListView,
-  Account as AccountView,
-  Settings as SettingsView,
   SignUp as SignUpView,
   SignIn as SignInView,
   NotFound as NotFoundView,
   AddStore as AddStoreView,
   Store as StoreView,
   Services
-} from './views';
+} from './views'; 
+
+import PropTypes from 'prop-types';
 const Sonu=()=>{
   return <h3>SONU IS THE BEST</h3>
 }
@@ -41,22 +40,10 @@ const Routes = () => {
         path="/store"
       />
       <RouteWithLayout
-        component={UserListView}
-        exact
-        layout={MainLayout}
-        path="/users"
-      />
-      <RouteWithLayout
         component={Sonu}
         exact
         layout={MinimalLayout}
         path="/sonu"
-      />
-      <RouteWithLayout
-        component={AccountView}
-        exact
-        layout={MainLayout}
-        path="/account"
       />
        <RouteWithLayout
         component={AddStoreView}
@@ -70,25 +57,19 @@ const Routes = () => {
         layout={MainLayout}
         path="/services"
       />
-      <RouteWithLayout
-        component={SettingsView}
-        exact
-        layout={MainLayout}
-        path="/settings"
-      />
-      <RouteWithLayout
+      <_RouteWithLayout
         component={SignUpView}
         exact
         layout={MinimalLayout}
         path="/sign-up"
       />
-      <RouteWithLayout
+      <_RouteWithLayout
         component={SignInView}
         exact
         layout={MinimalLayout}
         path="/sign-in"
       />
-      <RouteWithLayout
+      <_RouteWithLayout
         component={NotFoundView}
         exact
         layout={MinimalLayout}
@@ -98,5 +79,27 @@ const Routes = () => {
     </Switch>
   );
 };
+
+const _RouteWithLayout = props => {
+  const { layout: Layout, component: Component, ...rest } = props;
+  return (
+    <Route
+      {...rest}
+      render={matchProps => (
+        <Layout>
+          <Component {...matchProps} />
+        </Layout>
+      )}
+    />
+  );
+};
+
+RouteWithLayout.propTypes = {
+  component: PropTypes.any.isRequired,
+  layout: PropTypes.any.isRequired,
+  path: PropTypes.string
+};
+
+
 
 export default Routes;

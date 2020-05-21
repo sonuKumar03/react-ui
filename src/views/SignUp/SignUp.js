@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link as RouterLink, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import validate from 'validate.js';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/core';
 import {
   Grid,
   Button,
@@ -11,9 +11,16 @@ import {
   Link,
   FormHelperText,
   Checkbox,
-  Typography
+  Typography,
+  Backdrop,
+  CircularProgress
 } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import { useDispatch } from 'react-redux';
+import { signupUser } from 'async/user/user';
+import firebase from '../../config'
+import 'firebase/auth'
+import { login } from 'app/Garage/user/userSlice';
 
 const schema = {
   firstName: {
@@ -48,6 +55,10 @@ const schema = {
 };
 
 const useStyles = makeStyles(theme => ({
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
   root: {
     backgroundColor: theme.palette.background.default,
     height: '100%'
@@ -184,12 +195,33 @@ const SignUp = props => {
   const handleBack = () => {
     history.goBack();
   };
-
+  const dispatch = useDispatch();
+  const auth = firebase.auth();
+  const db = firebase.firestore();
   const handleSignUp = event => {
     event.preventDefault();
-    history.push('/');
+    setOpen(!open)
+    const {email,password} = formState.values;
+    auth.createUserWithEmailAndPassword(email,password).then((doc)=>{
+      if(!doc.user.uid){
+          alert('could  not create user');
+      }
+      const id = doc.user.uid;
+      db.doc(`stores/${id}`).set({}).then(()=>{}).catch(err=>{console.log(err);
+      })
+     dispatch(login(id));
+     history.push('/');
+    });
   };
 
+  const [open, setOpen] = React.useState(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
+  const handleToggle = () => {
+    setOpen(!open);
+  };
+  
   const hasError = field =>
     formState.touched[field] && formState.errors[field] ? true : false;
 
@@ -201,37 +233,6 @@ const SignUp = props => {
         justify="center"
         alignItems="center"
       >
-        {/* <Grid
-          className={classes.quoteContainer}
-          item
-          lg={5}
-        >
-          <div className={classes.quote}>
-            <div className={classes.quoteInner}>
-              <Typography
-                className={classes.quoteText}
-                variant="h1"
-              >
-                Hella narwhal Cosby sweater McSweeney's, salvia kitsch before
-                they sold out High Life.
-              </Typography>
-              <div className={classes.person}>
-                <Typography
-                  className={classes.name}
-                  variant="body1"
-                >
-                  Takamaru Ayako
-                </Typography>
-                <Typography
-                  className={classes.bio}
-                  variant="body2"
-                >
-                  Manager at inVision
-                </Typography>
-              </div>
-            </div>
-          </div>
-        </Grid> */}
         <Grid
           className={classes.content}
           item
@@ -376,6 +377,9 @@ const SignUp = props => {
           </div>
         </Grid>
       </Grid>
+      <Backdrop className={classes.backdrop} open={open} onClick={handleClose}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </div>
   );
 };

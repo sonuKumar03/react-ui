@@ -1,24 +1,25 @@
-import React, { useState } from 'react';
-import {useDispatch} from  'react-redux'
+import React, { useState ,useEffect} from 'react';
+import {useDispatch,useSelector} from  'react-redux'
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import {makeStyles,Card,CardHeader,CardContent,CardActions,Divider,Grid,Button,TextField} from '@material-ui/core';
-import { addService } from 'app/Garage/services/services';
+import { addServices } from 'async/store/store';
+import { selectUid } from 'app/Garage/user/userSlice';
+
 const useStyles = makeStyles(() => ({
   root: {}
 }));
-
-const AccountDetails = props => {
+const AddService = props => {
   const { className, setShow,show,...rest } = props;
-
   const classes = useStyles();
   const [values, setValues] = useState({
     name:'car wash',
     price:120,
     capacity:10,
-
+    type:'two wheeler'
   });
-  const dispatch = useDispatch();
+const dispatch = useDispatch();
+const storeId = useSelector(selectUid);  
   const handleChange = event => {
     setValues({
       ...values,
@@ -28,16 +29,15 @@ const AccountDetails = props => {
   const  onSubmit = ()=>{
     console.log(values);
     setShow(!show);
-    dispatch(addService(values));
-
+    dispatch(addServices({storeId,service:values}));
   }
   const states = [
     {
-      value: 'two_wheeler',
+      value: 'two wheeler',
       label: 'Two Wheeler'
     },
     {
-      value: 'four_wheeler',
+      value: 'four wheeler',
       label: 'Four Wheeler'
     }
   ];
@@ -83,9 +83,8 @@ const AccountDetails = props => {
                 onChange={handleChange}
                 required
                 select
-                // eslint-disable-next-line react/jsx-sort-props
                 SelectProps={{ native: true }}
-                value={values.state}
+                value={values.type}
                 variant="outlined">
                 {states.map(option => (
                   <option key={option.value} value={option.value}>
@@ -119,8 +118,8 @@ const AccountDetails = props => {
   );
 };
 
-AccountDetails.propTypes = {
+AddService.propTypes = {
   className: PropTypes.string
 };
 
-export default AccountDetails;
+export default AddService;

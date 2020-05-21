@@ -1,1 +1,1 @@
-export {  default}  from './AddStore'
+export { default}  from './AddStore'

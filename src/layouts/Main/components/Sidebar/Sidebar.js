@@ -48,6 +48,9 @@ const Sidebar = props => {
       title:"Store",
       href:'/store',
       icon:<AccountBoxIcon/>
+    },{
+    title:"AddStore",
+    href:"/addstore"
     }
   ];
 

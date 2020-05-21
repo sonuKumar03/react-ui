@@ -1,14 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
-import state from './initiaiState';
+// import state from './initiaiState';
 import shortid from 'shortid';
 const serviceSlice = createSlice({
   name: 'service',
-  initialState: state,
+  initialState: [],
   reducers: {
     addService:{
       reducer(state,action){
-      console.log('called');
-      // action.payload.id = shortId.generate();
       state.push(action.payload);
       },
       prepare(state){
@@ -18,18 +16,26 @@ const serviceSlice = createSlice({
         })}
       }
     },
+    setService:(state,action)=>{
+        state = [...action.payload];
+        return state;
+    },
     removeService:(state, action)=>{
-      return state.filter(service => service.id !== action.id);
+      state.filter(service => service.id !== action.id);
     },
     alloteService:(state,action)=>{
-      state.forEach((service)=>{ if(service.id===action.payload){ service.available+=1 } })
+      return Object.assign({},state,{
+        available:action.payload
+      })
     },
     releaseService:(state,action)=>{
-      state.forEach((service)=>{ if(service.id===action.payload){ service.available-=1 } })
+      return Object.assign({},state,{
+        available:action.payload
+      })
     }
   }
 });
 export const selectService = state=>state.services;
-const { actions, reducer } = serviceSlice;
-export const { addService ,removeService} = actions;
+const {actions,reducer} = serviceSlice
+export const {setService,alloteService,removeService,addService,releaseService} = actions;
 export default reducer;

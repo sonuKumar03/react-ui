@@ -4,8 +4,11 @@ const storeSlice = createSlice({
   name: "store",
   initialState,
   reducers: {
+    toggleStore:(state,action)=>{
+      state.open = action.payload
+    },
     addStore: {
-      reducer(state, action) {
+      reducer(state, action){
           state = {
             ...state,
             ...action.payload
@@ -18,7 +21,11 @@ const storeSlice = createSlice({
         basicInfo:action.payload
       })
     },
-    
+    addCharacteristic:(state,action)=>{
+      return Object.assign({},state,{
+        characteristic:action.payload
+      })
+    },
     addShedule:(state,action)=>{
       return  Object.assign({},state,{
       shedule:action.payload
@@ -29,13 +36,17 @@ const storeSlice = createSlice({
         location:action.payload
       })
     },
+    setStore:(state,action)=>{
+      return action.payload;
+    }
   },
 });
-
+export const selectCharacteristic = state=>state.store.characteristic
 export const selectShedule =state=>state.store.shedule;
 export const selectBasicInfo = state=>state.store.basicInfo;
 export const selectStore = state=>state.store;
+export const selectOpen = state=>state.store.open;
 const {actions,reducer} = storeSlice;
-export const { addStore ,addBasicInfo,addShedule,addLocation} =actions;
 
+export const { setStore, addStore ,addBasicInfo,addShedule,addLocation,addCharacteristic,toggleStore} =actions;
 export default reducer;

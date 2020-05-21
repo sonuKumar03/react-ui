@@ -13,8 +13,9 @@ import {
   Divider
 } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
-import { addBasicInfo } from 'app/Garage/store/storeSlice';
-import { useDispatch } from 'react-redux';
+import { addBasicInfo, selectBasicInfo } from 'app/Garage/store/storeSlice';
+import { useDispatch ,useSelector} from 'react-redux';
+
 const schema = {
   mobile:{
     presence:{allowEmpty:false,message:'is required'},
@@ -150,10 +151,10 @@ const BasicInfo = props => {
   const dispatch = useDispatch();
 
   const classes = useStyles();
- 
+  const info = useSelector(selectBasicInfo);
   const [formState, setFormState] = useState({
     isValid: false,
-    values: {},
+    values: info,
     touched: {},
     errors: {}
   });

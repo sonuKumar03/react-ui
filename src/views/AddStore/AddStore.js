@@ -5,10 +5,12 @@ import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import BasicInfo from './components/BasicInfo';
-import AddTiming from './components/AddTiming';
-import AddMap from './components/AddMap';
+import {BasicInfo,AddFeature,AddTiming,AddMap} from './components'
 import { useHistory } from 'react-router-dom';
+import {useDispatch, useSelector} from 'react-redux'
+import {addStoreInfo} from '../../async/store/store';
+import { selectStore } from 'app/Garage/store/storeSlice';
+import { selectUid } from 'app/Garage/user/userSlice';
 const useStyles = makeStyles(theme => ({
   root: {
     width: '100%'
@@ -25,18 +27,18 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 function getSteps() {
-  return ['Add Basic Info', 'AddTiming','AddMap'];
+  return ['Add Basic Info','Add Feature', 'AddTiming','AddMap'];
 }
+
 
 export default function AddStore() {
   const classes = useStyles();
-
   const [activeStep, setActiveStep] = React.useState(0);
-
   const [skipped, setSkipped] = React.useState(new Set());
-
   const steps = getSteps();
-
+  const store = useSelector(selectStore);
+  const storeId = useSelector(selectUid);
+  const dispatch = useDispatch();
   function getStepContent(step) {
     switch (step) {
       case 0:
@@ -48,7 +50,15 @@ export default function AddStore() {
             activeStep={activeStep}
           />
         );
-      case 1:
+      case 1:return (
+        <AddFeature
+          handleNext={handleNext}
+          handlePrev={handleBack}
+          steps={steps}
+          activeStep={activeStep}
+        />
+      )
+      case 2:
         return (
           <AddTiming
             handleNext={handleNext}
@@ -57,7 +67,7 @@ export default function AddStore() {
             activeStep={activeStep}
           />
         );
-      case 2:
+      case 3:
         return (
           <AddMap
             handleNext={handleNext}
@@ -95,21 +105,6 @@ export default function AddStore() {
     setActiveStep(prevActiveStep => prevActiveStep - 1);
   };
 
-  // const handleSkip = () => {
-  //   if (!isStepOptional(activeStep)) {
-  //     // You probably want to guard against something like this,
-  //     // it should never occur unless someone's actively trying to break something.
-  //     throw new Error("You can't skip a step that isn't optional.");
-  //   }
-
-  //   setActiveStep(prevActiveStep => prevActiveStep + 1);
-  //   setSkipped(prevSkipped => {
-  //     const newSkipped = new Set(prevSkipped.values());
-  //     newSkipped.add(activeStep);
-  //     return newSkipped;
-  //   });
-  // };
-
   const history = useHistory();
   return (
     <div className={classes.root}>
@@ -136,9 +131,9 @@ export default function AddStore() {
         {activeStep === steps.length ? (
           <div>
             <Typography className={classes.instructions} variant="h4">
-              All steps completed Heading Back to Dashboard 
+              All steps completed Heading Back to Dashboard
             </Typography>
-            <Button variant="contained" color="default" onClick={()=>{  history.push('/dashboard')  }}>Go Back To Dashboard</Button>
+            <Button variant="contained" color="default" onClick={()=>{ dispatch(addStoreInfo({store,storeId})) ; history.push('/dashboard')  }}>Go Back To Dashboard</Button>
           </div>
         ) : (
           <div>

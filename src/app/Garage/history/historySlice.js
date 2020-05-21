@@ -1,8 +1,8 @@
 import {createSlice} from '@reduxjs/toolkit'
-import history from './initialstate'
+// import history from './initialstate'
 const  historySlice = createSlice({
     name:'history',
-    initialState:history,
+    initialState:[],
     reducers:{
         addHistory:{
             reducer(state,action){

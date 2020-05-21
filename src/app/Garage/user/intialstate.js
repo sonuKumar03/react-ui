@@ -1,5 +1,6 @@
+const _user = localStorage.getItem('user');
 export default {
-    uid: "HnS3twSSiCfUYAthS2KPMTQo9482", 
-    isLoggedIn: true
+    uid:null,
+    isLoggedIn: false
 }
 export const logoutState  =  { uid:null,isLoggedIn:false }

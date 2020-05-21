@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/core';
 import {
   Grid,
   IconButton,
@@ -150,9 +150,9 @@ const AddTiming = props => {
   const { history, steps, activeStep, handleNext, handlePrev } = props;
   const classes = useStyles();
   const [formState, setFormState] = useState({
-    values: { days: [], time: { from: '09:30', to: '11:30' } }
+    values: { days:days.map(day=>({day,checked:false})), time: { from: '09:30', to: '11:30' } }
   });
-
+  
   const [open, setOpen] = useState(false);
   const [open1, setOpen1] = useState(false);
   const dispatch = useDispatch();
@@ -177,11 +177,12 @@ const AddTiming = props => {
 
 
   const handleShedule = (e) => {
-    let days  = formState.values.days;
+    let days  = formState.values.days.filter((day)=>day.checked===true);
+    console.log(days);
     if(days.length>0){
     let time = formState.values.time;
-    let shedule = days.map((day) => ({ day, ...time }));
-    dispatch(addShedule(shedule));
+    let shedules = days.map(t=>({day:t.day,...time}))
+    dispatch(addShedule(shedules));
     }
     return 
   };
@@ -208,7 +209,7 @@ const AddTiming = props => {
         ...state,
         values: {
           ...state.values,
-          days: [...state.values.days, name]
+          days:state.values.days.map((day)=>(day.day.localeCompare(name)===0)?({...day,checked}):day)
         }
       }));
     }
@@ -232,13 +233,14 @@ const AddTiming = props => {
                   </Typography>
                   <Divider style={{ marginBottom: 32 }} />
                   <FormGroup row>
-                    {days.map((day, i) => (
+                    {formState.values.days.map(({day,checked}, i) => (
                       <FormControlLabel
                         key={i}
                         control={
                           <Checkbox
                             name={day}
                             color="primary"
+                            value={checked}
                             onChange={handleDays}
                           />
                         }

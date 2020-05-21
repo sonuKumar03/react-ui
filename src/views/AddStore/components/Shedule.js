@@ -1,4 +1,4 @@
-import React , {forwardRef} from 'react';
+import React , {forwardRef,useEffect} from 'react';
 import {useDispatch} from  'react-redux';
 import MaterialTable from 'material-table';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
@@ -38,14 +38,22 @@ const tableIcons = {
 };
 export default function MaterialTableDemo() {
   const dispatch = useDispatch();
-  const [state] = React.useState({
+  const [state,setState] = React.useState({
     columns: [
       { title: 'Day', field: 'day' },
       { title: 'From', field: 'from' },
       { title: 'To', field: 'to' },
     ],
-    data:useSelector(selectShedule).map(o=>({...o})),
+    data:[],
   });
+let data = useSelector(selectShedule);
+useEffect(()=>{
+  let t =data.map((o)=>({...o}));
+  setState(state=>({
+    ...state,
+    data:[...t]
+  }))
+},[data])
   const theme = createMuiTheme({
     palette: {
       primary: {
@@ -55,7 +63,6 @@ export default function MaterialTableDemo() {
         main: '#ff9100',
       },
     },
-
   });
 
   return (
@@ -68,16 +75,6 @@ export default function MaterialTableDemo() {
       options={{
         search:false,
           actionsColumnIndex: -1
-      }}
-      editable={{
-        onRowDelete: (oldData) =>
-          new Promise((resolve) => {
-            console.log(oldData);
-            let shedules = state.data;
-            shedules = shedules.filter((data)=>oldData.day!==data.day);
-            dispatch(addShedule(shedules));
-            resolve();
-          }),
       }}
     />
     </MuiThemeProvider>
