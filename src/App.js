@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Router, Route, Redirect } from 'react-router-dom';
+import { Router } from 'react-router-dom';
 import { createBrowserHistory } from 'history';
 import { ThemeProvider  } from '@material-ui/core';
 import validate from 'validate.js';
@@ -10,7 +10,9 @@ import validators from './common/validators';
 import Routes from './Routes';
 import {connect} from 'react-redux'
 import { getStore } from 'async/store/store';
+
 const browserHistory = createBrowserHistory();
+
 validate.validators = {
   ...validate.validators,
   ...validators
@@ -32,6 +34,7 @@ const mapToDispatch = dispatch=>{
 
 class App extends Component {
   componentDidMount(){
+   
   }
   render() {
     return (

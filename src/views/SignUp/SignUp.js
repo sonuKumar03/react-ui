@@ -17,7 +17,6 @@ import {
 } from '@material-ui/core';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { useDispatch } from 'react-redux';
-import { signupUser } from 'async/user/user';
 import firebase from '../../config'
 import 'firebase/auth'
 import { login } from 'app/Garage/user/userSlice';
@@ -210,16 +209,13 @@ const SignUp = props => {
       db.doc(`stores/${id}`).set({}).then(()=>{}).catch(err=>{console.log(err);
       })
      dispatch(login(id));
-     history.push('/');
+     history.push('/addstore');
     });
   };
 
   const [open, setOpen] = React.useState(false);
   const handleClose = () => {
     setOpen(false);
-  };
-  const handleToggle = () => {
-    setOpen(!open);
   };
   
   const hasError = field =>

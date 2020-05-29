@@ -20,4 +20,4 @@ const {actions ,reducer}  = userSlice;
 export const {login,logout} = actions;
 export const selectIsLoggedIn = state=>state.user.isLoggedIn
 export const selectUid = state=>state.user.uid
-export default userSlice.reducer
+export default reducer

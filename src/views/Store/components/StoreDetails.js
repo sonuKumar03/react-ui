@@ -79,9 +79,23 @@ const StoreDetails = props => {
     setLoading(true);
     let callback=f=>f;
     try{
-        callback = db.doc(`stores/${storeId}/data/info`).onSnapshot((docs)=>{
+        callback = db.doc(`stores/${storeId}`).onSnapshot((docs)=>{
           const store = docs.data();
-            dispatch(setStore(store));
+          const {name,locality,open} = store;
+          const _store = {        
+            basicInfo:{
+            owner:store.owner,
+            mobile:store.mobile,
+            name,
+            locality,
+            ownership:store.ownership,
+            },
+            open,
+            location:store.location,
+            shedules:store.shedules,
+            characteristic:store.characteristic
+          }
+            dispatch(setStore(_store));
             setLoading(false);
         },(err)=>{ console.log(err);
          })
@@ -89,12 +103,24 @@ const StoreDetails = props => {
       console.log(err);
     }
     return callback;
-  },[])
+  },[dispatch,storeId])
 
-  const { basicInfo, characteristic,open } = useSelector(
+  let { basicInfo, characteristic,open } = useSelector(
     selectStore
   );
+
+  if(typeof basicInfo==='undefined'){
+    basicInfo={}
+  }
+  if(typeof characteristic==='undefined'){
+    characteristic={}
+  }
+  if(typeof open ==='undefined'){
+    open=false
+  }
+
   const _toggleStore = (event)=>{
+    console.log(open);
     dispatch(toggleStore({open,storeId}))
   }
   return (

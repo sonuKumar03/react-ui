@@ -28,7 +28,7 @@ const storeSlice = createSlice({
     },
     addShedule:(state,action)=>{
       return  Object.assign({},state,{
-      shedule:action.payload
+      shedules:action.payload
       })
     },
     addLocation:(state,action)=>{
@@ -42,10 +42,11 @@ const storeSlice = createSlice({
   },
 });
 export const selectCharacteristic = state=>state.store.characteristic
-export const selectShedule =state=>state.store.shedule;
+export const selectShedules =state=>state.store.shedules;
 export const selectBasicInfo = state=>state.store.basicInfo;
 export const selectStore = state=>state.store;
 export const selectOpen = state=>state.store.open;
+export const selectLocation = state=>state.store.location;
 const {actions,reducer} = storeSlice;
 
 export const { setStore, addStore ,addBasicInfo,addShedule,addLocation,addCharacteristic,toggleStore} =actions;

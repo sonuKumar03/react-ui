@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -9,9 +9,14 @@ import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 import Popover from '@material-ui/core/Popover';
-import Typography from '@material-ui/core/Typography';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
+import 'config'
+import firebase from 'firebase/app'
+import 'firebase/functions'
+import { selectUid } from 'app/Garage/user/userSlice';
+import {useSelector} from 'react-redux'
+const functions = firebase.functions();
 
 const useStyles = makeStyles(theme=>({
   table: {
@@ -37,6 +42,16 @@ const rows = [
 export default function SimpleTable() {
   const classes = useStyles();
   const [anchorEl, setAchorE1] = useState(false);
+  const storeId = useSelector(selectUid);
+
+  const getOrders = functions.httpsCallable('store_getOrders');
+  useEffect(()=>{
+    console.log(storeId);
+      getOrders(storeId).then(response=>{
+        let orders = response.data;
+        console.log(orders);
+      })
+  },[])
 
   const handleClick = event => {
     setAchorE1(event.currentTarget);

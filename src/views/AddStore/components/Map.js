@@ -5,13 +5,26 @@ import { useEffect } from "react";
 import { useState } from "react";
 import MapboxGeocoder from '@mapbox/mapbox-gl-geocoder'
 import mapToken from "common/token";
+import { selectLocation } from "app/Garage/store/storeSlice";
+import {useSelector} from 'react-redux'
 const mapStyle = {
   width: "100%",
   height:"50vh"
 };
 
-const AddMap = ({location,setLocation}) => {
-  const [state, setState] = useState({ location: { lat: "23.262200", lng: "82.560000" }, zoom: 13 });
+const AddMap = ({setLocation}) => {
+  const location = useSelector(selectLocation);
+  const help =(stored)=>{ 
+    console.log(stored);
+    if(stored.lng && stored.lat){
+      return  stored;
+    }
+    else
+    return ({ lat: "23.262200", lng: "82.560000" })
+  }
+
+  const [state, setState] = useState({ location: help(location), zoom: 13 });
+
   const mapConfig = {
     container: "map",
     style: "mapbox://styles/mapbox/streets-v9",
@@ -24,6 +37,7 @@ const AddMap = ({location,setLocation}) => {
       ...state,
       location:loc
     });
+    console.log(loc);
   }
   let mapInitialize = () => {
     mapboxgl.accessToken = mapToken;
@@ -40,7 +54,7 @@ const AddMap = ({location,setLocation}) => {
     marker.addTo(map);
 
     mapboxGeocoder.on('result',(results)=>{
-      const [lat,lng] = results.result.geometry.coordinates;
+      const [lng,lat] = results.result.geometry.coordinates;
       updateLocation({lat,lng})
     })
     map.addControl(mapboxGeocoder);

@@ -63,7 +63,7 @@ const Budget = props => {
             >
               PENDING ORDERS
             </Typography>
-            <Typography variant="h4">$24,000</Typography>
+            <Typography variant="h4">24</Typography>
           </Grid>
           <Grid item>
             <Avatar className={classes.avatar}>

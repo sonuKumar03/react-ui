@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link as RouterLink, withRouter } from 'react-router-dom';
-import {useSelector} from 'react-redux'
 import PropTypes from 'prop-types';
 import validate from 'validate.js';
 import { makeStyles } from '@material-ui/core';
@@ -18,8 +17,6 @@ import {
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import { Facebook as FacebookIcon, Google as GoogleIcon } from 'icons';
 import { useDispatch } from 'react-redux';
-import { loginUser } from 'async/user/user';
-import { selectLoading } from 'app/Garage/ui/uiSlice';
 import { login } from 'app/Garage/user/userSlice';
 const schema = {
   email: {
@@ -145,8 +142,6 @@ const SignIn = props => {
     errors: {}
   });
   const dispatch = useDispatch();
-  const loading = useSelector(selectLoading);
-
   useEffect(() => {
 
     const errors = validate(formState.values, schema);
@@ -155,7 +150,7 @@ const SignIn = props => {
       isValid: errors ? false : true,
       errors: errors || {}
     }));
-  }, [formState.values,loading]);
+  }, [formState.values]);
 
   // backdrop
   const [open, setOpen] = React.useState(false);

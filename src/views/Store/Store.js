@@ -25,7 +25,6 @@ export class Store extends Component {
         }
     }
     render() {
-        console.log(this.props.storeId,this.props.loading);
         return (
             <Grid container justify='center' alignItems='center'>
             <Grid item sm={10} xs={10} md={10}>

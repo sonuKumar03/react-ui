@@ -11,13 +11,8 @@ const initialState = {
       types: [],
       features: [],
     },
-    services:[{
-      name:"",
-      price:"",
-      capacity:""
-    }],
     location: {  lat: "", lng: "" },
-    shedule:[],
+    shedules:[],
   };
 
 

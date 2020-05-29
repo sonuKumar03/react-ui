@@ -13,7 +13,7 @@ import {
   Store as StoreView,
   Services
 } from './views'; 
-
+import ShedulesView from  'views/Store/components/Shedules'
 import PropTypes from 'prop-types';
 const Sonu=()=>{
   return <h3>SONU IS THE BEST</h3>
@@ -26,6 +26,12 @@ const Routes = () => {
         exact
         from="/"
         to="/dashboard"
+      />
+      <RouteWithLayout
+      component={ShedulesView}
+      exact
+      layout={MainLayout}
+      path='/shedules'
       />
       <RouteWithLayout
         component={DashboardView}
@@ -57,19 +63,19 @@ const Routes = () => {
         layout={MainLayout}
         path="/services"
       />
-      <_RouteWithLayout
+      <PRouteWithLayout
         component={SignUpView}
         exact
         layout={MinimalLayout}
         path="/sign-up"
       />
-      <_RouteWithLayout
+      <PRouteWithLayout
         component={SignInView}
         exact
         layout={MinimalLayout}
         path="/sign-in"
       />
-      <_RouteWithLayout
+      <PRouteWithLayout
         component={NotFoundView}
         exact
         layout={MinimalLayout}
@@ -80,7 +86,7 @@ const Routes = () => {
   );
 };
 
-const _RouteWithLayout = props => {
+const PRouteWithLayout = props => {
   const { layout: Layout, component: Component, ...rest } = props;
   return (
     <Route

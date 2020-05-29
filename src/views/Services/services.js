@@ -17,7 +17,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { selectService,setService } from 'app/Garage/services/services';
 import { AddService } from 'views';
 import { selectUid } from 'app/Garage/user/userSlice';
-import {  alloteService, releaseService } from 'async/store/store';
 import  firebase from 'firebase/app'
 const useStyles = makeStyles(theme => ({
   root: {
@@ -85,7 +84,7 @@ const Services = () => {
       console.log(err);
     }
     return cb;
-  },[])
+  },[db,dispatch,storeId])
   useEffect(()=>{
     setServices(data);
   },[data])

@@ -1,5 +1,4 @@
 import React , {forwardRef,useEffect} from 'react';
-import {useDispatch} from  'react-redux';
 import MaterialTable from 'material-table';
 import ArrowDownward from '@material-ui/icons/ArrowDownward';
 import Check from '@material-ui/icons/Check';
@@ -15,7 +14,7 @@ import Remove from '@material-ui/icons/Remove';
 import SaveAlt from '@material-ui/icons/SaveAlt';
 import Search from '@material-ui/icons/Search';
 import ViewColumn from '@material-ui/icons/ViewColumn';
-import { selectShedule, addShedule } from 'app/Garage/store/storeSlice';
+import { selectShedules } from 'app/Garage/store/storeSlice';
 import { useSelector } from 'react-redux';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core';
 const tableIcons = {
@@ -37,7 +36,6 @@ const tableIcons = {
   ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />)
 };
 export default function MaterialTableDemo() {
-  const dispatch = useDispatch();
   const [state,setState] = React.useState({
     columns: [
       { title: 'Day', field: 'day' },
@@ -46,9 +44,10 @@ export default function MaterialTableDemo() {
     ],
     data:[],
   });
-let data = useSelector(selectShedule);
+let data = useSelector(selectShedules);
+console.log(data);
 useEffect(()=>{
-  let t =data.map((o)=>({...o}));
+  let t =data?data.map((o)=>({...o})):[]
   setState(state=>({
     ...state,
     data:[...t]

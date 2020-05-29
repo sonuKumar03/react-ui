@@ -18,11 +18,10 @@ import {
   MenuItem
 } from '@material-ui/core';
 import 'date-fns';
-
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import Shedule from './Shedule'
-import { useDispatch } from 'react-redux';
-import { addShedule } from 'app/Garage/store/storeSlice';
+import { useDispatch ,useSelector} from 'react-redux';
+import { addShedule, selectShedules } from 'app/Garage/store/storeSlice';
 const days = [
   'sunday',
   'monday',
@@ -149,8 +148,36 @@ const useStyles = makeStyles(theme => ({
 const AddTiming = props => {
   const { history, steps, activeStep, handleNext, handlePrev } = props;
   const classes = useStyles();
+  const shedules = useSelector(selectShedules);
+  
+  const help = (stored,days,next)=>{
+    if(stored){
+      let t = days.map((day)=>{
+          let x = stored.find((shedule)=>(shedule.day.localeCompare(day)===0));
+          if(x){
+            return  {day,checked:true}
+          }
+          return ({day,checked:false});
+      });
+      return t;
+    }
+    next(stored,days);
+    return days.map(day=>({day,checked:false}));
+  }
+  const _handleNext=()=>{
+    let days  = formState.values.days.filter((day)=>day.checked===true);
+    if(days.length>0){
+    let time = formState.values.time;
+    let shedules = days.map(t=>({day:t.day,...time,open:true}))
+    console.log(shedules);      
+    dispatch(addShedule(shedules));
+    handleNext();
+    }
+    else return 
+  }
   const [formState, setFormState] = useState({
-    values: { days:days.map(day=>({day,checked:false})), time: { from: '09:30', to: '11:30' } }
+    values: { days:help(shedules,days,(a,b)=>{console.log(a,b);
+    }), time: { from: '09:30', to: '11:30' } }
   });
   
   const [open, setOpen] = useState(false);
@@ -240,7 +267,7 @@ const AddTiming = props => {
                           <Checkbox
                             name={day}
                             color="primary"
-                            value={checked}
+                            checked={checked}
                             onChange={handleDays}
                           />
                         }
@@ -273,7 +300,7 @@ const AddTiming = props => {
                             <em>None</em>
                           </MenuItem>
                           {
-                            time.map((t,i)=>(<MenuItem key={i} value={t}>{t}</MenuItem>))
+                            time.map((t,i)=>(<MenuItem key={i} value={t}> {t} </MenuItem>))
                           }
                         </Select>
                       </FormControl>
@@ -311,7 +338,7 @@ const AddTiming = props => {
                     <Button
                       variant="contained"
                       color="primary"
-                      onClick={handleNext}
+                      onClick={_handleNext}
                       style={{ marginRight: 32 }}
                       className={classes.button}>
                       {activeStep === steps.length - 1 ? 'Finish' : 'Next'}

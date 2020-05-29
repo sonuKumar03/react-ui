@@ -68,17 +68,29 @@ const useStyles = makeStyles(theme => ({
 }));
 const types = ['Two Wheeler', 'Four Wheeler'];
 const features = ['Coloring', 'Wash', 'Replacement', 'Repair'];
+
 const AddFeature = props => {
   const { history } = props;
   const { handleNext, steps, activeStep, handlePrev } = props;
   const dispatch = useDispatch();
   const classes = useStyles();
   //retrived from state
-  const characteristic = useSelector(selectCharacteristic);
-  
-  const help = (stored,ar)=>{
-    const t = [];
-    
+  let characteristic = useSelector(selectCharacteristic);
+  if(typeof characteristic==='undefined'){
+    characteristic={}
+  }
+  const help = (stored,names)=>{
+    if(stored){
+    const t =names.map(name=>{
+        let x  = stored.find(s=>s.name.localeCompare(name)===0);
+        if(x){
+          return x;
+        }
+        return name;
+        })
+        return t;
+    }
+    return names.map(name=>({name,checked:false}));
   }
 
   
@@ -91,7 +103,6 @@ const AddFeature = props => {
   const handleBack = () => {
     history.goBack();
   };
-console.log(formState);
   const handleTypes = event => {
     event.persist();
     const { name, checked } = event.currentTarget;
@@ -130,9 +141,8 @@ console.log(formState);
   };
   const handleSubmit = () => {
     console.log(formState);
-    let types = formState.types.filter(type=>type.checked===true);
-    let features = formState.features.filter(feature=>feature.checked===true);
-    console.log(types,features);
+    // let types = formState.types.filter(type=>type.checked===true);
+    // let features = formState.features.filter(feature=>feature.checked===true);
     dispatch(addCharacteristic(formState));
     handleNext();
   };

@@ -1,5 +1,4 @@
 import {
-  toggleStore as _toggleStore,
   setStore
 } from 'app/Garage/store/storeSlice';
 import 'config';
@@ -11,15 +10,23 @@ import { setService } from 'app/Garage/services/services';
 const db = firebase.firestore();
 
 // add info
-export const addStoreInfo = storeData => dispatch => {
+export const addStoreInfo = storeData => async dispatch => {
   const { storeId } = storeData;
   const { store } = storeData;
-  db.collection(`stores/${storeId}/info`).add(store).then(doc => {
-    console.log('added', doc.id);
-  })
-  .catch(err => {
-    console.log(err);
-  });
+  console.log(store);
+  const data = {
+    storeId:storeId,
+    ownership:store.basicInfo.ownership,
+    name:store.basicInfo.name,
+    mobile:store.basicInfo.mobile,
+    locality:store.basicInfo.locality,
+    characteristic:store.characteristic,
+    shedules:store.shedules,
+    open:store.open,
+    location:store.location,
+  }
+  await db.collection('stores').doc(`${storeId}`).set(data);
+
 };
 export const addServices = serviceData => dispatch => {
   const { storeId, service } = serviceData;
@@ -31,15 +38,29 @@ export const addServices = serviceData => dispatch => {
 
 export const getStore = storeId => dispatch => {
   dispatch(SET_LOADING());
-  db.doc(`/stores/${storeId}/data/info`).get()
-        .then(doc => {
-          console.log(doc.data());
-          dispatch(setStore(doc.data()));
-          dispatch(UNSET_LOADING());
-        }).catch(err=>{ console.log(err);
-    })
-}
+  db.doc(`/stores/${storeId}`).onSnapshot((doc)=>{
+    console.log(doc.data());
+    const data  = doc.data();
+    let store ={
+      basicInfo:{
+        name:data.name,
+        ownership:data.ownership,
+        locality:data.locality,
+        storeId:data.storeId,
+        mobile:data.mobile
+      },
+      open:data.open,
+      shedules:data.shedules,
+      characteristic:data.characteristic,
+      services:data.services,
+      location:data.location
 
+    }
+    dispatch(setStore(store));
+    dispatch(UNSET_LOADING());
+  },(err)=>{console.log(err);
+  })
+}
 export const getServices = (storeId)=>dispatch=>{
   dispatch(SET_LOADING());
   db.collection(`stores/${storeId}/services`).get().then(snaps=>{
@@ -61,16 +82,16 @@ export const alloteService = ({storeId,serviceId,available})=>dispatch=>{
 export const releaseService = ({storeId,serviceId,available})=>dispatch=>{
   available=available+1;
   db.doc(`stores/${storeId}/services/${serviceId}`).update({available}).then(()=>{
-    dispatch(release(available));
+    dispatch(release(available))  ;
     console.log('updated');
   })
 }
 
 export const toggleStore = ({ storeId, open }) => dispatch => {
   open=!open
-  db.doc(`stores/${storeId}/data/info`).update({open}).then(()=>{
+  db.doc(`stores/${storeId}`).update({open}).then(()=>{
     console.log('updated');
-  }).catch(err=>{
+    }).catch(err=>{
     console.log(err);
   })
 };

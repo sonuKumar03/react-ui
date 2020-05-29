@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { useDispatch, useSelector } from 'react-redux';
+import {  useSelector } from 'react-redux';
 import { selectUid, selectIsLoggedIn } from 'app/Garage/user/userSlice';
 const RouteWithLayout = props => {
   const { layout: Layout, component: Component, ...rest } = props;

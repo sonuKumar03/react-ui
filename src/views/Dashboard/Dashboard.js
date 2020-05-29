@@ -6,7 +6,7 @@ import {
     TasksProgress,
   LatestOrders
 } from './components';
-import { getStore, getServices } from 'async/store/store';
+import { getServices, getStore } from 'async/store/store';
 import { useDispatch,useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { selectUid } from 'app/Garage/user/userSlice';
@@ -22,7 +22,8 @@ const Dashboard = () => {
   const id = useSelector(selectUid);
   useEffect(()=>{
     dispatch(getServices(id))
-  },[])
+    dispatch(getStore(id))
+  },[dispatch,id])
   return (
     <div className={classes.root}>
       <Grid

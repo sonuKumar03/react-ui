@@ -20,8 +20,6 @@ const getLoadState = () => {
   }
 };
 
-console.log(getLoadState());
-
 const state = {
   store: {
     open: false,
@@ -40,8 +38,5 @@ const store = configureStore({
   preloadedState: state
 });
 
-// store.subscribe(() => {
-//   console.log(store.getState());
-// });
 
 export default store;

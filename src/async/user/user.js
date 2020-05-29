@@ -1,10 +1,8 @@
-import axios from 'axios'
 import { login, logout } from 'app/Garage/user/userSlice'
 import firebase from '../../config'
 import 'firebase/auth'
 import { SET_LOADING, UNSET_LOADING } from 'app/Garage/ui/uiSlice'
 const auth  = firebase.auth()
-const db  = firebase.firestore();
 
 export const loginUser = (userData)=>dispatch=>{
     dispatch(SET_LOADING());
