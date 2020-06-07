@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core';
 import { Card, CardContent, Grid, Typography, Avatar } from '@material-ui/core';
 import MoneyIcon from '@material-ui/icons/Money';
-
+import { useState } from 'react';
+import 'config'
+import firebase from 'firebase/app'
+import {useSelector} from 'react-redux'
+import { selectUid } from 'app/Garage/user/userSlice';
 const useStyles = makeStyles(theme => ({
   root: {
     height: '100%'
@@ -38,11 +42,25 @@ const useStyles = makeStyles(theme => ({
     marginRight: theme.spacing(1)
   }
 }));
-
 const Budget = props => {
   const { className, ...rest } = props;
-
   const classes = useStyles();
+  const storeId = useSelector(selectUid);
+  const [pending,setPending] = useState(0);
+
+  useEffect(()=>{
+    const query = firebase.firestore().collection('orders').where('storeId','==',storeId);
+    query.onSnapshot((snaps)=>{
+      const _orders = snaps.docs.map((order)=>order.data());
+      let i = 0;
+      _orders.forEach(order=>{
+        if(order.status.localeCompare('serviced')===0 || order.status.localeCompare('rejected')===0){
+          i++;
+        }
+      });
+      setPending(_orders.length-i);
+    });
+  },[])
 
   return (
     <Card
@@ -63,7 +81,7 @@ const Budget = props => {
             >
               PENDING ORDERS
             </Typography>
-            <Typography variant="h4">24</Typography>
+  <Typography variant="h4">{pending}</Typography>
           </Grid>
           <Grid item>
             <Avatar className={classes.avatar}>

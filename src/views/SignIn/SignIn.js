@@ -143,7 +143,6 @@ const SignIn = props => {
   });
   const dispatch = useDispatch();
   useEffect(() => {
-
     const errors = validate(formState.values, schema);
     setFormState(formState => ({
       ...formState,

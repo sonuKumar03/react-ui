@@ -200,13 +200,16 @@ const SignUp = props => {
   const handleSignUp = event => {
     event.preventDefault();
     setOpen(!open)
-    const {email,password} = formState.values;
+    const {email,password,firstName,lastName} = formState.values;
     auth.createUserWithEmailAndPassword(email,password).then((doc)=>{
       if(!doc.user.uid){
           alert('could  not create user');
       }
       const id = doc.user.uid;
-      db.doc(`stores/${id}`).set({}).then(()=>{}).catch(err=>{console.log(err);
+      const name = {
+        name:`${firstName} ${lastName}`
+      }
+      db.doc(`stores/${id}`).set(name).then(()=>{}).catch(err=>{console.log(err);
       })
      dispatch(login(id));
      history.push('/addstore');
@@ -217,7 +220,7 @@ const SignUp = props => {
   const handleClose = () => {
     setOpen(false);
   };
-  
+
   const hasError = field =>
     formState.touched[field] && formState.errors[field] ? true : false;
 

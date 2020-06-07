@@ -13,9 +13,12 @@ const  historySlice = createSlice({
             const index = state.findIndex((request)=>request.id===action.payload)
             state.splice(index);
         },
+        resetHistory:(state,action)=>{
+            return [];
+        }
     }
 })
 
-export const{ addHistory,removeHistory } = historySlice.actions
+export const{ addHistory,removeHistory,resetHistory } = historySlice.actions
 export const selectHistory = state=>state.history
 export default historySlice.reducer;

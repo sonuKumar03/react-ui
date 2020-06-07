@@ -32,10 +32,13 @@ const serviceSlice = createSlice({
       return Object.assign({},state,{
         available:action.payload
       })
+    },
+    resetServices:(state,action)=>{
+      return [];
     }
   }
 });
 export const selectService = state=>state.services;
 const {actions,reducer} = serviceSlice
-export const {setService,alloteService,removeService,addService,releaseService} = actions;
+export const {resetServices,setService,alloteService,removeService,addService,releaseService} = actions;
 export default reducer;

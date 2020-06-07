@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect ,useState} from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core';
@@ -11,7 +11,10 @@ import {
   LinearProgress
 } from '@material-ui/core';
 import InsertChartIcon from '@material-ui/icons/InsertChartOutlined';
-
+import { useSelector } from 'react-redux';
+import { selectUid } from 'app/Garage/user/userSlice';
+import 'config'
+import firebase from 'firebase/app'
 const useStyles = makeStyles(theme => ({
   root: {
     height: '100%'
@@ -40,8 +43,29 @@ const useStyles = makeStyles(theme => ({
 
 const TasksProgress = props => {
   const { className, ...rest } = props;
-
+  const [orders,setOrders] = useState([]);
+  const [serviced,setServiced]=useState(0);
   const classes = useStyles();
+  const storeId = useSelector(selectUid);
+
+  const total = orders.length;
+
+  const completed = serviced*100/total;
+
+  useEffect(()=>{
+    const query = firebase.firestore().collection('orders').where('storeId','==',storeId);
+    query.onSnapshot((snaps)=>{
+      const _orders = snaps.docs.map((order)=>order.data());
+      setOrders(_orders);
+      let i = 0;
+      _orders.forEach(order=>{
+        if(order.status.localeCompare('serviced')===0 || order.status.localeCompare('rejected') ===0){
+          i++;
+        }
+      });
+      setServiced(_orders.length-i);
+    });
+  },[])
 
   return (
     <Card
@@ -62,7 +86,7 @@ const TasksProgress = props => {
             >
               ORDER PROGRESS
             </Typography>
-            <Typography variant="h4">75.5%</Typography>
+  <Typography variant="h4">{`${Math.floor(completed)} %`}</Typography>
           </Grid>
           <Grid item>
             <Avatar className={classes.avatar}>
@@ -72,7 +96,7 @@ const TasksProgress = props => {
         </Grid>
         <LinearProgress
           className={classes.progress}
-          value={75.5}
+          value={Math.floor(completed)}
           variant="determinate"
         />
       </CardContent>

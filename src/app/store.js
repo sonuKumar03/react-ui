@@ -5,9 +5,10 @@ import {
   history,
   user,
   services,
-  ui
+  ui,
+  orders
 } from './Garage';
-const rootReducer = { store: s, user, notifications, history, services, ui };
+const rootReducer = { store: s, user, notifications, history, services, ui ,orders};
 
 const saver = store => next => action => {
   let result = next(action);
@@ -27,14 +28,17 @@ const state = {
     characteristic: {},
     services: [{}],
     location: {},
-    shedule: []
+    shedule: [],
+    orders:[],
   },
   user: getLoadState()
 };
 
 const store = configureStore({
   reducer: rootReducer,
-  middleware: [...getDefaultMiddleware(), saver],
+  middleware: [...getDefaultMiddleware({
+    serializableCheck:false
+  }), saver],
   preloadedState: state
 });
 

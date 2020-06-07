@@ -154,14 +154,22 @@ const StoreDetails = props => {
       </CardContent>
       <Divider />
       <div style={{ marginTop:8,marginLeft:8 }}>
-        {(characteristic.types)?characteristic.types.map(({name,checked},i) => (
+        {(characteristic.types)?characteristic.types.map(({name,checked},i) => {
+        if(checked)
+        return (
           <Chip key={i} size="small" icon={getIcons(name)} label={name} style={{ marginRight: 8,marginBottom:8 }} />
-        )):null}
+        )
+        return null
+      }):null
+      }
       </div>
       <div style={{ marginTop:8,marginLeft:8 }}>
-        {(characteristic.features)?characteristic.features.map(({name},i)=>(
-          <Chip key={i}  icon={getIcons(name)} size="small" label={name} style={{ marginRight: 8 ,marginBottom:8}} />
-        )):null}
+        {(characteristic.features)?characteristic.features.map(({name,checked},i)=>{
+          if(checked)
+          return <Chip key={i}  icon={getIcons(name)} size="small" label={name} style={{ marginRight: 8 ,marginBottom:8}} />
+          return null
+      }
+        ):null}
       </div>
       <div style={{display:"flex" ,justifyContent:"flex-end",marginBottom:8,marginRight:8}}>
         <Button color="primary" variant="contained" onClick={_toggleStore}>{(open)?"CLOSE STORE":"OPEN STORE"}</Button>

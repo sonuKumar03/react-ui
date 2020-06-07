@@ -102,8 +102,8 @@ const Services = () => {
       <div>{show ? <AddService show={show} setShow={setShow} /> : null}</div>
       {!loading ? (
         <Grid container spacing={3} style={{ marginTop: 8 }}>
-          {services.map(service => (
-            <Grid key={service.serviceId} item md={4}>
+          {services.map((service,i) => (
+            <Grid key={i} item md={4}>
               <Card className={clsx(classes.root)}>
                 <CardContent>
                   <Grid container direction="row" justify="space-between">

@@ -11,7 +11,9 @@ import {
   NotFound as NotFoundView,
   AddStore as AddStoreView,
   Store as StoreView,
-  Services
+  Services,
+  Account,
+  Profile
 } from './views'; 
 import ShedulesView from  'views/Store/components/Shedules'
 import PropTypes from 'prop-types';
@@ -44,6 +46,18 @@ const Routes = () => {
         exact
         layout={MainLayout}
         path="/store"
+      />
+        <RouteWithLayout
+        component={Account}
+        exact
+        layout={MainLayout}
+        path="/account"
+      />
+        <RouteWithLayout
+        component={Profile}
+        exact
+        layout={MainLayout}
+        path="/profile"
       />
       <RouteWithLayout
         component={Sonu}

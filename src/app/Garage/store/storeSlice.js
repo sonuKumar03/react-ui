@@ -38,6 +38,17 @@ const storeSlice = createSlice({
     },
     setStore:(state,action)=>{
       return action.payload;
+    },
+    resetStore:(state,action)=>{
+      return {
+          open: false,
+          basicInfo: {},
+          characteristic: {},
+          services: [{}],
+          location: {},
+          shedule: [],
+          orders:[],
+        }
     }
   },
 });
@@ -49,5 +60,5 @@ export const selectOpen = state=>state.store.open;
 export const selectLocation = state=>state.store.location;
 const {actions,reducer} = storeSlice;
 
-export const { setStore, addStore ,addBasicInfo,addShedule,addLocation,addCharacteristic,toggleStore} =actions;
+export const { resetStore,setStore, addStore ,addBasicInfo,addShedule,addLocation,addCharacteristic,toggleStore} =actions;
 export default reducer;
